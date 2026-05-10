@@ -192,6 +192,15 @@ func get_deck_count() -> int:
 func get_discard_count() -> int:
 	return discard_pile.size()
 
+# 獲取棄牌堆卡牌資料列表
+func get_discard_cards() -> Array[Dictionary]:
+	var cards: Array[Dictionary] = []
+	for card_id in discard_pile:
+		var card_data = all_cards.get(card_id, {}).duplicate(true)
+		if not card_data.is_empty():
+			cards.append(card_data)
+	return cards
+
 
 # 檢查是否有足夠資源使用卡牌
 func can_play_card(card_index: int, available_actions: int, available_resources: int = 0) -> bool:

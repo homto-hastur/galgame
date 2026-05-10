@@ -19,12 +19,12 @@ theme_override_font_sizes/font_size = 16
 text = "牌庫: 0"
 horizontal_alignment = 0
 
-[node name="DiscardLabel" type="Label" parent="."]
+[node name="DiscardButton" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -120.0
+offset_left = -140.0
 offset_top = 0.0
 offset_right = -20.0
 offset_bottom = 30.0

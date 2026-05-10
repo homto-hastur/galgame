@@ -21,7 +21,7 @@ const CARD_OVERLAP: float = 0.65        # 卡牌重疊比例（0.65 = 每張牌�
 
 # 節點參照
 @onready var deck_label: Label = $DeckLabel
-@onready var discard_label: Label = $DiscardLabel
+@onready var discard_button: Button = $DiscardButton
 
 # 卡牌列表
 var card_uis: Array[CardUI] = []
@@ -45,7 +45,10 @@ func set_card_manager(manager: CardManager) -> void:
 	# 初始化顯示
 	_refresh_hand_display()
 	deck_label.text = "牌庫: %d" % card_manager.get_deck_count()
-	discard_label.text = "棄牌: %d" % card_manager.get_discard_count()
+	discard_button.text = "棄牌: %d" % card_manager.get_discard_count()
+	
+	# 連接棄牌堆按鈕
+	discard_button.pressed.connect(_on_discard_button_pressed)
 
 
 # 更新可用行動點數
@@ -73,7 +76,7 @@ func _on_deck_updated(deck_count: int) -> void:
 
 # 棄牌堆更新回調
 func _on_discard_updated(discard_count: int) -> void:
-	discard_label.text = "棄牌: %d" % discard_count
+	discard_button.text = "棄牌: %d" % discard_count
 
 
 # ============================================================
@@ -187,8 +190,19 @@ func _update_pile_labels_position() -> void:
 	var base_y: float = get_viewport_rect().size.y - BASE_Y_OFFSET
 	# 牌庫標籤在左側，與手牌同一水平
 	deck_label.position = Vector2(deck_label.position.x, base_y)
-	# 棄牌堆標籤在右側，與手牌同一水平
-	discard_label.position = Vector2(discard_label.position.x, base_y)
+	# 棄牌堆按鈕在右側，與手牌同一水平
+	discard_button.position = Vector2(discard_button.position.x, base_y)
+
+
+# 棄牌堆按鈕點擊：打開棄牌堆檢視面板
+func _on_discard_button_pressed() -> void:
+	if card_manager == null:
+		return
+	
+	var discard_scene = preload("res://scenes/DiscardPanel.tscn")
+	var discard_panel = discard_scene.instantiate() as DiscardPanel
+	discard_panel.setup(card_manager)
+	add_child(discard_panel)
 
 
 # 刷新卡牌是否可使用
