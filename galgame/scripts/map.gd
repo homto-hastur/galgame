@@ -87,6 +87,7 @@ var dragging: bool = false
 var drag_start: Vector2
 var node_positions := []
 var _node_buttons: Dictionary = {}  # node_id -> Button，儲存所有地點按鈕
+var _visited_nodes: Array = []  # 已探索過的節點 ID 列表
 
 # 卡牌拖拽鎖定（拖拽卡牌時禁止地圖平移/縮放）
 var card_dragging: bool = false
@@ -535,6 +536,10 @@ func _on_node_pressed(node_id: int) -> void:
 	# 更新目前位置
 	current_node_id = node_id
 	
+	# 記錄已去過的節點（永遠顯示）
+	if not current_node_id in _visited_nodes:
+		_visited_nodes.append(current_node_id)
+	
 	# 更新節點可見性：只顯示新位置的相鄰節點
 	_update_node_visibility()
 	
@@ -665,6 +670,11 @@ func _update_node_visibility() -> void:
 			btn.visible = true
 			continue
 		
+		# 已去過的節點永遠顯示
+		if id in _visited_nodes:
+			btn.visible = true
+			continue
+		
 		# 與當前地點相鄰的節點顯示
 		if id in current_connections:
 			btn.visible = true
@@ -690,9 +700,10 @@ func _draw_arrows() -> void:
 	arrows_container.add_child(drawer)
 	
 	# 收集所有連接線資料 - 只繪製可見節點之間的箭頭
-	# 可見節點 = 當前節點 + 與當前節點相鄰的節點
+	# 可見節點 = 當前節點 + 已去過的節點 + 與當前節點相鄰的節點
 	var lines_data: Array = []
 	var visible_nodes: Array = [current_node_id]
+	visible_nodes.append_array(_visited_nodes)
 	visible_nodes.append_array(location_data[current_node_id]["connections"])
 	
 	var drawn := {}
