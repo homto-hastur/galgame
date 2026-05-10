@@ -8,7 +8,7 @@ var location_data := {
 		"desc": "巨大的鐵門矗立眼前，鏽跡斑斑的門環訴說著久遠的故事。這裡是地牢唯一的出口，也是通往各處的必經之路。",
 		"shroud": 0,
 		"clues": 0,
-		"connections": [1, 2, 3, 4, 5],
+		"connections": [1],
 		"locked": false
 	},
 	1: {
@@ -24,7 +24,7 @@ var location_data := {
 		"desc": "曾經奢華的大廳如今只剩殘破的掛毯和碎裂的雕像。月光從高處的窗戶灑落，照亮了滿地的塵埃。",
 		"shroud": 3,
 		"clues": 2,
-		"connections": [0, 1, 3],
+		"connections": [1, 4, 5],
 		"locked": true
 	},
 	3: {
@@ -32,7 +32,7 @@ var location_data := {
 		"desc": "書架上塞滿了泛黃的書卷，空氣中瀰漫著古老紙張的氣味。某本書的書頁間似乎夾著什麼重要的線索。",
 		"shroud": 4,
 		"clues": 3,
-		"connections": [0, 2, 4],
+		"connections": [],
 		"locked": true
 	},
 	4: {
@@ -40,7 +40,7 @@ var location_data := {
 		"desc": "金幣和珠寶散落一地，在昏暗的光線下閃爍著誘人的光芒。但寶物之中似乎隱藏著致命的陷阱。",
 		"shroud": 3,
 		"clues": 2,
-		"connections": [0, 3, 5],
+		"connections": [2, 5],
 		"locked": true
 	},
 	5: {
@@ -48,7 +48,7 @@ var location_data := {
 		"desc": "一股令人窒息的壓迫感籠罩著這個房間。黑暗中，一個巨大的身影緩緩轉過身來——最終的挑戰就在眼前。",
 		"shroud": 5,
 		"clues": 4,
-		"connections": [0, 4],
+		"connections": [2, 4],
 		"locked": true
 	}
 }
