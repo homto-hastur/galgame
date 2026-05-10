@@ -17,9 +17,23 @@
 
 在報告給用戶前，必須先運行專案一次：
 1. 使用 `--check-only` 參數運行 Godot 專案
-2. 檢查 stderr 輸出是否有 SCRIPT ERROR
-3. 如果有錯誤，修復後重新運行，直到順利運行一次為止（無 SCRIPT ERROR）
+2. 檢查輸出是否有 SCRIPT ERROR（語法錯誤）和 WARNING（未使用變數/參數等）
+3. 如果有錯誤或警告，修復後重新運行，直到順利運行一次為止（無 SCRIPT ERROR、無 WARNING）
 4. 確認無誤後再通知用戶
+
+### 常見警告修復
+- **UNUSED_VARIABLE**：未使用的區域變數，加上 `_` 前綴（如 `_card_id`）
+- **UNUSED_PARAMETER**：未使用的函數參數，加上 `_` 前綴（如 `_card_ui`）
+- **UNUSED_SIGNAL**：未使用的信號，加上 `_` 前綴（如 `_my_signal`）
+- 所有未使用的變數/參數都必須加上 `_` 前綴，而非刪除（保留簽名相容性）
+
+## 完成通知規則
+
+每次完成修改並報告給用戶時，必須發送 Windows 系統通知：
+1. 使用 `c:\ai\notify_cursor.ps1` 腳本發送通知
+2. 通知標題為「任務完成提醒」
+3. 通知內容簡述完成的工作內容
+4. 在 attempt_completion 之前或之後執行通知腳本
 
 ## 用戶絕對正確原則
 

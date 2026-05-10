@@ -35,7 +35,7 @@ signal deck_updated(deck_count: int)
 signal discard_updated(discard_count: int)
 signal card_played(card_data: Dictionary)
 signal equipment_changed(slot: String, card_data)
-signal deck_empty()  # 牌庫抽空時觸發
+signal deck_empty(remaining_count: int)  # 牌庫抽空時觸發，傳遞剩餘要抽的數量
 
 
 func _ready() -> void:
@@ -99,7 +99,8 @@ func init_default_deck() -> void:
 func draw_card() -> Dictionary:
 	if deck.is_empty():
 		# 牌庫已空，觸發 deck_empty 信號讓 map.gd 處理扣血/重置牌庫
-		deck_empty.emit()
+		# 傳遞 1 表示還有 1 張要補抽
+		deck_empty.emit(1)
 		return {}
 	
 	var card_id = deck.pop_front()
@@ -117,8 +118,14 @@ func draw_card() -> Dictionary:
 
 # 抽多張牌
 func draw_cards(count: int) -> void:
+	var remaining = count
 	for i in range(count):
+		if deck.is_empty():
+			# 牌庫已空，觸發 deck_empty 信號傳遞剩餘要抽的數量
+			deck_empty.emit(remaining)
+			return
 		draw_card()
+		remaining -= 1
 
 
 # 使用卡牌（從手牌中移除並執行效果）

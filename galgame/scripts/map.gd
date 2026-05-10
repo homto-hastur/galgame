@@ -204,8 +204,15 @@ func _on_equipment_changed(_slot: String, _card_data) -> void:
 	_update_equipment_display()
 
 
+# 牌庫抽空時剩餘要補抽的牌數
+var _deck_empty_remaining: int = 0
+
+
 # 牌庫抽空時顯示通知界面
-func _on_deck_empty() -> void:
+func _on_deck_empty(remaining_count: int) -> void:
+	# 記錄剩餘要補抽的牌數
+	_deck_empty_remaining = remaining_count
+	
 	# 顯示牌庫抽空通知（參考場景1存檔界面風格，白色面板+黑色邊框，螢幕中央）
 	deck_empty_overlay.visible = true
 	deck_empty_overlay.modulate = Color(1, 1, 1, 0)
@@ -235,7 +242,12 @@ func _on_deck_empty_choose_hp() -> void:
 	damage_player(1, 0)
 	# 將棄牌堆重新洗入牌庫
 	card_manager.reshuffle_discard_into_deck()
-	print("牌庫抽空懲罰：扣除 1 HP，棄牌堆已重新洗入牌庫")
+	# 補發原本要抽的牌
+	if _deck_empty_remaining > 0:
+		card_manager.draw_cards(_deck_empty_remaining)
+		print("牌庫抽空懲罰：扣除 1 HP，棄牌堆已重新洗入牌庫，補發 %d 張牌" % _deck_empty_remaining)
+	else:
+		print("牌庫抽空懲罰：扣除 1 HP，棄牌堆已重新洗入牌庫")
 
 
 # 選擇扣除 SAN
@@ -245,7 +257,12 @@ func _on_deck_empty_choose_san() -> void:
 	damage_player(0, 1)
 	# 將棄牌堆重新洗入牌庫
 	card_manager.reshuffle_discard_into_deck()
-	print("牌庫抽空懲罰：扣除 1 SAN，棄牌堆已重新洗入牌庫")
+	# 補發原本要抽的牌
+	if _deck_empty_remaining > 0:
+		card_manager.draw_cards(_deck_empty_remaining)
+		print("牌庫抽空懲罰：扣除 1 SAN，棄牌堆已重新洗入牌庫，補發 %d 張牌" % _deck_empty_remaining)
+	else:
+		print("牌庫抽空懲罰：扣除 1 SAN，棄牌堆已重新洗入牌庫")
 
 
 # 處理卡牌棄牌
