@@ -62,6 +62,8 @@ func set_available_resources(resources: int) -> void:
 # 手牌更新回調
 func _on_hand_updated(_hand_cards: Array) -> void:
 	_refresh_hand_display()
+	# 手牌更新時也更新牌庫/棄牌堆位置
+	_update_pile_labels_position()
 
 
 
@@ -142,6 +144,10 @@ func _refresh_hand_display() -> void:
 		return
 	
 	var hand = card_manager.get_hand()
+	
+	# 更新牌庫/棄牌堆位置（與手牌同一水平高度）
+	_update_pile_labels_position()
+	
 	if hand.is_empty():
 		return
 	
@@ -174,6 +180,15 @@ func _refresh_hand_display() -> void:
 	
 	# 刷新可玩狀態
 	_refresh_playable_state()
+
+
+# 更新牌庫/棄牌堆標籤位置（與手牌同一水平高度）
+func _update_pile_labels_position() -> void:
+	var base_y: float = get_viewport_rect().size.y - BASE_Y_OFFSET
+	# 牌庫標籤在左側，與手牌同一水平
+	deck_label.position = Vector2(deck_label.position.x, base_y)
+	# 棄牌堆標籤在右側，與手牌同一水平
+	discard_label.position = Vector2(discard_label.position.x, base_y)
 
 
 # 刷新卡牌是否可使用
