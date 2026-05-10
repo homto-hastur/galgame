@@ -32,7 +32,7 @@ var location_data := {
 		"desc": "書架上塞滿了泛黃的書卷，空氣中瀰漫著古老紙張的氣味。某本書的書頁間似乎夾著什麼重要的線索。",
 		"shroud": 4,
 		"clues": 3,
-		"connections": [],
+		"connections": [5],
 		"locked": true
 	},
 	4: {
@@ -48,7 +48,7 @@ var location_data := {
 		"desc": "一股令人窒息的壓迫感籠罩著這個房間。黑暗中，一個巨大的身影緩緩轉過身來——最終的挑戰就在眼前。",
 		"shroud": 5,
 		"clues": 4,
-		"connections": [2, 4],
+		"connections": [2, 4, 3],
 		"locked": true
 	}
 }
