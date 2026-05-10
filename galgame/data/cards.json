@@ -100,7 +100,7 @@
 		"id": "fire_spell",
 		"name": "火球術",
 		"type": "spell",
-		"cost": 2,
+		"cost": 1,
 		"resource_cost": 3,
 		"description": "凝聚魔力釋放一顆火球，造成3點傷害。",
 		"flavor": "「🔥」",

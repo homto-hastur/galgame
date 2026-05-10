@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://d2q5k7m8oap0x"]
+[gd_scene load_steps=2 format=3 uid="uid://d2q5k7m8oap1x"]
 
-[ext_resource type="Script" path="res://scripts/discard_panel.gd" id="1_discard"]
+[ext_resource type="Script" path="res://scripts/deck_panel.gd" id="1_deck"]
 
-[node name="DiscardPanel" type="Control"]
+[node name="DeckPanel" type="Control"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -10,7 +10,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("1_discard")
+script = ExtResource("1_deck")
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
@@ -58,7 +58,7 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 22
-text = "棄牌堆 (0 張)"
+text = "牌庫 (0 張)"
 
 [node name="CloseButton" type="Button" parent="Panel/Margin/VBox/Header"]
 layout_mode = 2

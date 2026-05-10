@@ -20,6 +20,9 @@ var hand: Array[Dictionary] = []
 # 棄牌堆（已使用或丟棄的卡牌 ID 列表）
 var discard_pile: Array[String] = []
 
+# 手牌上限
+const MAX_HAND_SIZE: int = 8
+
 # 已裝備的卡牌（插槽系統）
 var equipped: Dictionary = {
 	"hand": null,       # 手部（武器/盾牌）
@@ -196,6 +199,15 @@ func get_discard_count() -> int:
 func get_discard_cards() -> Array[Dictionary]:
 	var cards: Array[Dictionary] = []
 	for card_id in discard_pile:
+		var card_data = all_cards.get(card_id, {}).duplicate(true)
+		if not card_data.is_empty():
+			cards.append(card_data)
+	return cards
+
+# 獲取牌庫剩餘卡牌資料列表（僅供檢視，非抽牌順序）
+func get_deck_cards() -> Array[Dictionary]:
+	var cards: Array[Dictionary] = []
+	for card_id in deck:
 		var card_data = all_cards.get(card_id, {}).duplicate(true)
 		if not card_data.is_empty():
 			cards.append(card_data)

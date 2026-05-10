@@ -1,12 +1,12 @@
 extends Control
 
 # ============================================================
-#  棄牌堆檢視面板
-#  參考場景1存檔界面風格：黑色半透明背景 + 中央白色面板
-#  使用 Card.tscn 展示棄牌，與手牌顯示一致
+#  牌庫檢視面板
+#  參考棄牌堆面板風格：黑色半透明背景 + 中央白色面板
+#  展示牌庫中剩餘的卡牌（僅供檢視，非抽牌順序）
 # ============================================================
 
-class_name DiscardPanel
+class_name DeckPanel
 
 var card_manager: CardManager = null
 var _pending_setup: bool = false
@@ -41,7 +41,7 @@ func setup(manager: CardManager) -> void:
 	_refresh_display()
 
 
-# 刷新棄牌堆顯示
+# 刷新牌庫顯示
 func _refresh_display() -> void:
 	# 清除舊卡牌
 	for child in card_container.get_children():
@@ -50,12 +50,12 @@ func _refresh_display() -> void:
 	if card_manager == null:
 		return
 	
-	var cards = card_manager.get_discard_cards()
-	count_label.text = "棄牌堆 (%d 張)" % cards.size()
+	var cards = card_manager.get_deck_cards()
+	count_label.text = "牌庫 (%d 張)" % cards.size()
 	
 	if cards.is_empty():
 		var empty_label = Label.new()
-		empty_label.text = "棄牌堆為空"
+		empty_label.text = "牌庫為空"
 		empty_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		empty_label.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		empty_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5, 1))
@@ -63,7 +63,7 @@ func _refresh_display() -> void:
 		card_container.add_child(empty_label)
 		return
 	
-	# 使用 Card.tscn 展示每張棄牌（與手牌顯示一致）
+	# 使用 Card.tscn 展示每張牌庫卡牌（與手牌顯示一致）
 	var card_scene = preload("res://scenes/Card.tscn")
 	for card_data in cards:
 		var card_ui = card_scene.instantiate() as CardUI

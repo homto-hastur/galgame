@@ -72,7 +72,7 @@ var player_equipment: Array[String] = []
 
 # 資源（參考 Arkham Horror 資源系統，用於打出卡牌）
 var player_resources: int = 5
-var player_max_resources: int = 10
+var player_max_resources: int = 99
 
 # 行動次數（參考 Arkham Horror，每回合 3 次行動）
 var player_actions: int = 3
@@ -416,6 +416,10 @@ func _input(event: InputEvent) -> void:
 		_close_dialogue()
 		return
 	
+	# 牌庫/棄牌堆面板開啟時，鎖定地圖平移和縮放
+	if _is_panel_open():
+		return
+	
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
@@ -442,6 +446,11 @@ func _input(event: InputEvent) -> void:
 		map_content.position.y += delta.y
 		_clamp_map()
 		drag_start = event.position
+
+
+# 檢查是否有牌庫/棄牌堆面板開啟（鎖定地圖操作）
+func _is_panel_open() -> bool:
+	return get_tree().get_nodes_in_group("card_panel").size() > 0
 
 func _apply_zoom(mouse_pos: Vector2, old_zoom: float) -> void:
 	var mouse_in_map = (mouse_pos - map_content.position) / old_zoom
@@ -671,8 +680,14 @@ func reset_actions() -> void:
 	# 新回合抽一張牌
 	card_manager.draw_card()
 	
-	# 更新手牌面板的行動點顯示（資源不重置，參考 Arkham Horror）
+	# 每回合增加 1 點資源（上限為最大資源數）
+	player_resources = mini(player_resources + 1, player_max_resources)
+	_update_resource_display()
+	print("回合結束，資源 +1，目前: %d/%d" % [player_resources, player_max_resources])
+	
+	# 更新手牌面板的行動點和資源顯示
 	hand_panel.set_available_actions(player_actions)
+	hand_panel.set_available_resources(player_resources)
 	
 	print("行動次數已重置: %d/%d" % [player_actions, player_max_actions])
 
@@ -723,6 +738,13 @@ func _hide_end_turn_button() -> void:
 
 
 func _on_end_turn_pressed() -> void:
+	# 檢查手牌是否超過上限（超過8張必須先棄牌）
+	if card_manager.hand.size() > card_manager.MAX_HAND_SIZE:
+		print("手牌超過 %d 張，請先棄牌！" % card_manager.MAX_HAND_SIZE)
+		# 顯示提示訊息
+		_show_hand_full_warning()
+		return
+	
 	print("回合結束，重置行動次數")
 	var tween = create_tween()
 	tween.tween_property(_end_turn_btn, "scale", Vector2(0.9, 0.9), 0.05)
@@ -731,6 +753,24 @@ func _on_end_turn_pressed() -> void:
 	tween.tween_callback(func():
 		reset_actions()
 	)
+
+
+# 顯示手牌已滿警告
+func _show_hand_full_warning() -> void:
+	var warning = Label.new()
+	warning.text = "手牌已滿（%d/%d），請先使用或棄牌！" % [card_manager.hand.size(), card_manager.MAX_HAND_SIZE]
+	warning.add_theme_color_override("font_color", Color(1, 0.2, 0.2, 1))
+	warning.add_theme_font_size_override("font_size", 20)
+	warning.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	warning.position = Vector2(size.x / 2.0 - 200.0, size.y / 2.0 - 80.0)
+	warning.size = Vector2(400, 40)
+	add_child(warning)
+	
+	# 2 秒後自動消失
+	var tween = create_tween()
+	tween.tween_interval(2.0)
+	tween.tween_property(warning, "modulate", Color(1, 1, 1, 0), 0.5)
+	tween.tween_callback(func(): warning.queue_free())
 
 
 # ============================================================

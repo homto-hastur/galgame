@@ -20,7 +20,7 @@ const BASE_Y_OFFSET: float = 100.0      # 底部往上偏移（數值越小越�
 const CARD_OVERLAP: float = 0.65        # 卡牌重疊比例（0.65 = 每張牌覆蓋前一張的65%寬度）
 
 # 節點參照
-@onready var deck_label: Label = $DeckLabel
+@onready var deck_button: Button = $DeckButton
 @onready var discard_button: Button = $DiscardButton
 
 # 卡牌列表
@@ -32,7 +32,8 @@ signal card_used(card_data: Dictionary)
 
 
 func _ready() -> void:
-	pass
+	# 延遲更新位置，確保 viewport 尺寸已就緒
+	_update_pile_labels_position.call_deferred()
 
 
 # 設定卡牌管理器
@@ -44,10 +45,11 @@ func set_card_manager(manager: CardManager) -> void:
 	
 	# 初始化顯示
 	_refresh_hand_display()
-	deck_label.text = "牌庫: %d" % card_manager.get_deck_count()
+	deck_button.text = "牌庫: %d" % card_manager.get_deck_count()
 	discard_button.text = "棄牌: %d" % card_manager.get_discard_count()
 	
-	# 連接棄牌堆按鈕
+	# 連接按鈕
+	deck_button.pressed.connect(_on_deck_button_pressed)
 	discard_button.pressed.connect(_on_discard_button_pressed)
 
 
@@ -72,7 +74,7 @@ func _on_hand_updated(_hand_cards: Array) -> void:
 
 # 牌組更新回調
 func _on_deck_updated(deck_count: int) -> void:
-	deck_label.text = "牌庫: %d" % deck_count
+	deck_button.text = "牌庫: %d" % deck_count
 
 # 棄牌堆更新回調
 func _on_discard_updated(discard_count: int) -> void:
@@ -188,10 +190,22 @@ func _refresh_hand_display() -> void:
 # 更新牌庫/棄牌堆標籤位置（與手牌同一水平高度）
 func _update_pile_labels_position() -> void:
 	var base_y: float = get_viewport_rect().size.y - BASE_Y_OFFSET
-	# 牌庫標籤在左側，與手牌同一水平
-	deck_label.position = Vector2(deck_label.position.x, base_y)
+	# 牌庫按鈕在左側，與手牌同一水平
+	deck_button.position = Vector2(deck_button.position.x, base_y)
 	# 棄牌堆按鈕在右側，與手牌同一水平
 	discard_button.position = Vector2(discard_button.position.x, base_y)
+
+
+# 牌庫按鈕點擊：打開牌庫檢視面板
+func _on_deck_button_pressed() -> void:
+	if card_manager == null:
+		return
+	
+	var deck_scene = preload("res://scenes/DeckPanel.tscn")
+	var deck_panel = deck_scene.instantiate() as DeckPanel
+	deck_panel.setup(card_manager)
+	# 添加到根視窗以確保覆蓋整個畫面（不受 clip_contents 影響）
+	get_tree().root.add_child(deck_panel)
 
 
 # 棄牌堆按鈕點擊：打開棄牌堆檢視面板
@@ -202,7 +216,8 @@ func _on_discard_button_pressed() -> void:
 	var discard_scene = preload("res://scenes/DiscardPanel.tscn")
 	var discard_panel = discard_scene.instantiate() as DiscardPanel
 	discard_panel.setup(card_manager)
-	add_child(discard_panel)
+	# 添加到根視窗以確保覆蓋整個畫面（不受 clip_contents 影響）
+	get_tree().root.add_child(discard_panel)
 
 
 # 刷新卡牌是否可使用
