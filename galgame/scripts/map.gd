@@ -670,6 +670,9 @@ func _update_node_visibility() -> void:
 			btn.visible = true
 		else:
 			btn.visible = false
+	
+	# 重新繪製箭頭，只保留與當前節點相鄰的連接線
+	_draw_arrows()
 
 
 # ============================================================
