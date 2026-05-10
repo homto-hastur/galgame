@@ -303,8 +303,9 @@ func _on_card_drag_started(card_ui: CardUI) -> void:
 func _on_card_drag_ended(_card_ui: CardUI, was_used: bool) -> void:
 	# 通知地圖解除鎖定
 	card_drag_ended.emit()
-	# 無論是取消使用還是棄牌，都恢復所有卡牌位置
-	_restore_all_positions()
+	# 卡牌已使用或棄牌時，手牌會刷新，不需要恢復位置
+	if not was_used:
+		_restore_all_positions()
 
 
 
@@ -313,39 +314,12 @@ func _on_card_drag_ended(_card_ui: CardUI, was_used: bool) -> void:
 # ============================================================
 
 func _on_card_discarded(card_data: Dictionary, card_ui: CardUI) -> void:
-	if card_manager == null:
-		return
-	
-	# 棄牌：透過卡牌 ID 找到在手牌中的實際索引（避免索引偏移問題）
-	var card_id = card_data.get("id", "")
-	if not card_id.is_empty():
-		var actual_index = -1
-		for i in range(card_manager.hand.size()):
-			if card_manager.hand[i].get("id", "") == card_id:
-				actual_index = i
-				break
-		
-		if actual_index >= 0:
-			card_manager.hand.remove_at(actual_index)
-			card_manager.discard_pile.append(card_id)
-			card_manager.hand_updated.emit(card_manager.hand)
-			card_manager.discard_updated.emit(card_manager.discard_pile.size())
-			card_discarded.emit(card_data)
-			print("棄牌: %s" % card_data.get("name", ""))
+	# 手牌面板只負責轉發信號，不直接操作 card_manager
+	# 由 map.gd 的 _on_card_discarded_from_hand 統一處理棄牌邏輯
+	card_discarded.emit(card_data)
 
 
 func _on_card_used(card_data: Dictionary, card_ui: CardUI) -> void:
-	if card_manager == null:
-		return
-	
-	# 使用卡牌：透過卡牌 ID 找到在手牌中的實際索引
-	var card_id = card_data.get("id", "")
-	if not card_id.is_empty():
-		var actual_index = -1
-		for i in range(card_manager.hand.size()):
-			if card_manager.hand[i].get("id", "") == card_id:
-				actual_index = i
-				break
-		
-		if actual_index >= 0 and card_manager.use_card(actual_index):
-			card_used.emit(card_data)
+	# 手牌面板只負責轉發信號，不直接操作 card_manager
+	# 由 map.gd 的 _on_card_used_from_hand 統一處理資源消耗、效果執行和卡牌移除
+	card_used.emit(card_data)

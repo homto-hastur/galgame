@@ -205,13 +205,15 @@ func _end_drag() -> void:
 	var drop_type = _get_drop_target()
 	match drop_type:
 		"discard":
-			# 拖到螢幕底部：棄牌
-			card_drag_ended.emit(self, false)
+			# 拖到棄牌堆按鈕附近：棄牌
 			card_discarded.emit(card_data)
-		"use":
-			# 拖到棄牌堆按鈕附近：使用卡牌
+			# 棄牌後手牌會刷新，不需要恢復位置
 			card_drag_ended.emit(self, true)
+		"use":
+			# 拖到地圖區域：使用卡牌
 			card_used.emit(card_data)
+			# 使用後手牌會刷新，不需要恢復位置
+			card_drag_ended.emit(self, true)
 		_:
 			# 其他位置：回彈到手牌
 			card_drag_ended.emit(self, false)

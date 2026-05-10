@@ -193,7 +193,23 @@ func _on_card_drag_ended() -> void:
 
 
 # 處理卡牌棄牌
-func _on_card_discarded_from_hand(_card_data: Dictionary) -> void:
+func _on_card_discarded_from_hand(card_data: Dictionary) -> void:
+	# 棄牌：從手牌移除並加入棄牌堆
+	var card_id = card_data.get("id", "")
+	if not card_id.is_empty():
+		var actual_index = -1
+		for i in range(card_manager.hand.size()):
+			if card_manager.hand[i].get("id", "") == card_id:
+				actual_index = i
+				break
+		
+		if actual_index >= 0:
+			card_manager.hand.remove_at(actual_index)
+			card_manager.discard_pile.append(card_id)
+			card_manager.hand_updated.emit(card_manager.hand)
+			card_manager.discard_updated.emit(card_manager.discard_pile.size())
+			print("棄牌: %s" % card_data.get("name", ""))
+	
 	# 棄牌後檢查手牌是否仍超過上限
 	if card_manager.hand.size() > card_manager.MAX_HAND_SIZE:
 		print("手牌仍超過 %d 張，請繼續棄牌！" % card_manager.MAX_HAND_SIZE)
@@ -229,6 +245,19 @@ func _on_card_used_from_hand(card_data: Dictionary) -> void:
 	
 	# 執行卡牌效果
 	_apply_card_effect(card_data)
+	
+	# 從手牌中移除卡牌（裝備類卡牌會裝備到對應插槽）
+	# 放在最後執行，避免 card_manager.use_card 觸發 hand_updated → _refresh_hand_display
+	# 導致正在處理的 card_ui 被提前釋放
+	var card_id = card_data.get("id", "")
+	if not card_id.is_empty():
+		var actual_index = -1
+		for i in range(card_manager.hand.size()):
+			if card_manager.hand[i].get("id", "") == card_id:
+				actual_index = i
+				break
+		if actual_index >= 0:
+			card_manager.use_card(actual_index)
 	
 	# 更新手牌面板的行動點和資源顯示
 	hand_panel.set_available_actions(player_actions)
