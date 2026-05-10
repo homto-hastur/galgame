@@ -689,13 +689,21 @@ func _draw_arrows() -> void:
 	drawer.name = "ArrowDrawer"
 	arrows_container.add_child(drawer)
 	
-	# 收集所有連接線資料
+	# 收集所有連接線資料 - 只繪製可見節點之間的箭頭
+	# 可見節點 = 當前節點 + 與當前節點相鄰的節點
 	var lines_data: Array = []
+	var visible_nodes: Array = [current_node_id]
+	visible_nodes.append_array(location_data[current_node_id]["connections"])
+	
 	var drawn := {}
 	
-	for id in location_data.keys():
+	for id in visible_nodes:
 		var from_pos = _get_node_center(id)
 		for conn_id in location_data[id]["connections"]:
+			# 只繪製連接到可見節點的箭頭
+			if not conn_id in visible_nodes:
+				continue
+			
 			var key = str(mini(id, conn_id)) + "-" + str(maxi(id, conn_id))
 			if drawn.has(key):
 				continue
