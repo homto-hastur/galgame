@@ -347,6 +347,87 @@ theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
 theme_override_font_sizes/font_size = 14
 text = "無"
 
+[node name="DeckEmptyOverlay" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="Panel" parent="DeckEmptyOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -150.0
+offset_right = 250.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("1")
+
+[node name="Margin" type="MarginContainer" parent="DeckEmptyOverlay/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="DeckEmptyOverlay/Panel/Margin"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="DeckEmptyOverlay/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 22
+text = "牌庫已空！"
+horizontal_alignment = 1
+
+[node name="Separator" type="HSeparator" parent="DeckEmptyOverlay/Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="Desc" type="Label" parent="DeckEmptyOverlay/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
+theme_override_font_sizes/font_size = 16
+text = "你的牌庫已經抽空，必須付出代價才能重置牌庫。"
+autowrap_mode = 2
+
+[node name="Spacer" type="Control" parent="DeckEmptyOverlay/Panel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PenaltyLabel" type="Label" parent="DeckEmptyOverlay/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.1, 0.1, 1)
+theme_override_font_sizes/font_size = 18
+text = "請選擇懲罰："
+horizontal_alignment = 1
+
+[node name="BtnHP" type="Button" parent="DeckEmptyOverlay/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "扣除 1 點生命值（HP）"
+
+[node name="BtnSan" type="Button" parent="DeckEmptyOverlay/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "扣除 1 點理智值（SAN）"
+
 [node name="CardManager" type="Node" parent="."]
 script = ExtResource("5_card_manager")
 

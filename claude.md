@@ -21,4 +21,16 @@
    
    *When completing a task (using attempt_completion), execute the above command to trigger a system notification reminding the user to open Cursor.*
 
+4. **🚫 禁止未經授權的 Git/GitHub 操作**：
+   除非用戶明確下達備份指令（例如「推送到 GitHub」、「commit」、「備份」、「push」等），否則嚴格禁止執行任何 Git 操作，包括但不限於：
+   - `git add`、`git commit`、`git push`
+   - `git init`、`git remote` 等倉庫設定操作
+   - 使用用戶的 GitHub 帳號進行任何遠端操作
+   - 將檔案上傳到任何遠端倉庫
+   
+   所有開發工作僅限於本地檔案修改，由用戶自行決定何時進行版本控制備份。
+   若用戶未明確授權但需要 Git 操作來完成任務，必須先詢問用戶取得許可。
+   
+   *Unless the user explicitly gives backup instructions (e.g., "push to GitHub", "commit", "backup", "push"), strictly prohibit any Git operations including but not limited to: git add, git commit, git push, git init, git remote setup, using the user's GitHub account for any remote operations, or uploading files to any remote repository. All development work is limited to local file modifications only. If Git operations are needed but not explicitly authorized, ask the user for permission first.*
+
 

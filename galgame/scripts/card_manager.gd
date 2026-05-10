@@ -35,6 +35,7 @@ signal deck_updated(deck_count: int)
 signal discard_updated(discard_count: int)
 signal card_played(card_data: Dictionary)
 signal equipment_changed(slot: String, card_data)
+signal deck_empty()  # 牌庫抽空時觸發
 
 
 func _ready() -> void:
@@ -97,7 +98,8 @@ func init_default_deck() -> void:
 # 抽一張牌
 func draw_card() -> Dictionary:
 	if deck.is_empty():
-		print("牌組已空，無法抽牌！")
+		# 牌庫已空，觸發 deck_empty 信號讓 map.gd 處理扣血/重置牌庫
+		deck_empty.emit()
 		return {}
 	
 	var card_id = deck.pop_front()
@@ -151,17 +153,20 @@ func _equip_card(card_index: int, slot: String) -> bool:
 	
 	var card_data = hand[card_index]
 	
-	# 如果該插槽已有裝備，先卸下（回到手牌）
+	# 如果該插槽已有裝備，先卸下（舊裝備直接進入棄牌堆，參考 Arkham Horror 設計）
 	if equipped[slot] != null:
 		var old_card = equipped[slot]
-		hand.append(old_card)
-		print("卸下裝備: %s" % old_card.get("name", ""))
+		var old_card_id = old_card.get("id", "")
+		if not old_card_id.is_empty():
+			discard_pile.append(old_card_id)
+		print("卸下裝備（進入棄牌堆）: %s" % old_card.get("name", ""))
 	
 	# 裝備新卡牌
 	equipped[slot] = card_data
 	hand.remove_at(card_index)
 	
 	hand_updated.emit(hand)
+	discard_updated.emit(discard_pile.size())
 	equipment_changed.emit(slot, card_data)
 	print("裝備 %s: %s" % [slot, card_data.get("name", "")])
 	return true
@@ -255,3 +260,22 @@ func reset_deck() -> void:
 	equipment_changed.emit("hand", null)
 	equipment_changed.emit("accessory", null)
 	print("牌組已重置，共 %d 張" % deck.size())
+
+
+# 將棄牌堆重新洗入牌庫（保留手牌和裝備不變）
+func reshuffle_discard_into_deck() -> void:
+	if discard_pile.is_empty():
+		print("棄牌堆為空，無需重置")
+		return
+	
+	# 將棄牌堆所有卡牌移回牌庫
+	for card_id in discard_pile:
+		deck.append(card_id)
+	discard_pile.clear()
+	
+	# 重新洗牌
+	deck.shuffle()
+	
+	discard_updated.emit(discard_pile.size())
+	deck_updated.emit(deck.size())
+	print("棄牌堆已重新洗入牌庫，牌庫共 %d 張" % deck.size())

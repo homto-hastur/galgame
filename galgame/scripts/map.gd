@@ -103,6 +103,7 @@ var card_dragging: bool = false
 @onready var dialogue_content: RichTextLabel = $DialogueOverlay/DialoguePanel/Margin/VBox/Content
 @onready var draw_card_btn: Button = $ActionPanel/DrawCardBtn
 @onready var gain_resource_btn: Button = $ActionPanel/GainResourceBtn
+@onready var deck_empty_overlay: ColorRect = $DeckEmptyOverlay
 
 # 卡牌系統
 @onready var card_manager = $CardManager
@@ -176,6 +177,12 @@ func _init_card_system() -> void:
 	# 連接卡牌棄牌信號
 	hand_panel.card_discarded.connect(_on_card_discarded_from_hand)
 	
+	# 連接裝備變更信號（更新裝備顯示）
+	card_manager.equipment_changed.connect(_on_equipment_changed)
+	
+	# 連接牌庫抽空信號
+	card_manager.deck_empty.connect(_on_deck_empty)
+	
 	# 連接卡牌拖拽信號（拖拽時鎖定地圖平移/縮放）
 	hand_panel.card_drag_started.connect(_on_card_drag_started)
 	hand_panel.card_drag_ended.connect(_on_card_drag_ended)
@@ -192,7 +199,57 @@ func _on_card_drag_ended() -> void:
 	dragging = false
 
 
+# 裝備變更時更新裝備顯示
+func _on_equipment_changed(_slot: String, _card_data) -> void:
+	_update_equipment_display()
+
+
+# 牌庫抽空時顯示通知界面
+func _on_deck_empty() -> void:
+	# 顯示牌庫抽空通知（參考場景1存檔界面風格，白色面板+黑色邊框，螢幕中央）
+	deck_empty_overlay.visible = true
+	deck_empty_overlay.modulate = Color(1, 1, 1, 0)
+	
+	# 連接按鈕事件
+	var btn_hp = deck_empty_overlay.get_node("Panel/Margin/VBox/BtnHP") as Button
+	var btn_san = deck_empty_overlay.get_node("Panel/Margin/VBox/BtnSan") as Button
+	
+	# 先斷開舊連接避免重複
+	if btn_hp.pressed.is_connected(_on_deck_empty_choose_hp):
+		btn_hp.pressed.disconnect(_on_deck_empty_choose_hp)
+	if btn_san.pressed.is_connected(_on_deck_empty_choose_san):
+		btn_san.pressed.disconnect(_on_deck_empty_choose_san)
+	
+	btn_hp.pressed.connect(_on_deck_empty_choose_hp)
+	btn_san.pressed.connect(_on_deck_empty_choose_san)
+	
+	# 淡入動畫
+	var tween = create_tween()
+	tween.tween_property(deck_empty_overlay, "modulate", Color(1, 1, 1, 1), 0.3)
+
+
+# 選擇扣除 HP
+func _on_deck_empty_choose_hp() -> void:
+	deck_empty_overlay.visible = false
+	# 扣除 1 點生命值
+	damage_player(1, 0)
+	# 將棄牌堆重新洗入牌庫
+	card_manager.reshuffle_discard_into_deck()
+	print("牌庫抽空懲罰：扣除 1 HP，棄牌堆已重新洗入牌庫")
+
+
+# 選擇扣除 SAN
+func _on_deck_empty_choose_san() -> void:
+	deck_empty_overlay.visible = false
+	# 扣除 1 點理智值
+	damage_player(0, 1)
+	# 將棄牌堆重新洗入牌庫
+	card_manager.reshuffle_discard_into_deck()
+	print("牌庫抽空懲罰：扣除 1 SAN，棄牌堆已重新洗入牌庫")
+
+
 # 處理卡牌棄牌
+
 func _on_card_discarded_from_hand(card_data: Dictionary) -> void:
 	# 棄牌：從手牌移除並加入棄牌堆
 	var card_id = card_data.get("id", "")
