@@ -86,6 +86,7 @@ var zoom_index: int = 7  # 對應 1.0
 var dragging: bool = false
 var drag_start: Vector2
 var node_positions := []
+var _node_buttons: Dictionary = {}  # node_id -> Button，儲存所有地點按鈕
 
 # 卡牌拖拽鎖定（拖拽卡牌時禁止地圖平移/縮放）
 var card_dragging: bool = false
@@ -481,6 +482,10 @@ func _init_map_nodes() -> void:
 			btn.text += "\n[線索:%d]" % data["clues"]
 		
 		nodes_container.add_child(btn)
+		_node_buttons[id] = btn
+	
+	# 初始化節點可見性：只顯示起點（大門）和與起點相鄰的節點
+	_update_node_visibility()
 	
 	# 玩家標記（在大門位置）
 	player_piece.position = Vector2(
@@ -529,6 +534,9 @@ func _on_node_pressed(node_id: int) -> void:
 	
 	# 更新目前位置
 	current_node_id = node_id
+	
+	# 更新節點可見性：只顯示新位置的相鄰節點
+	_update_node_visibility()
 	
 	# 消耗一次行動
 	use_action()
@@ -637,6 +645,31 @@ func _clamp_map() -> void:
 		map_content.position.y = (size.y - map_h) / 2
 	else:
 		map_content.position.y = clampf(map_content.position.y, min_y, max_y)
+
+
+# ============================================================
+#  節點可見性控制：只顯示當前地點的相鄰節點
+# ============================================================
+
+func _update_node_visibility() -> void:
+	# 取得當前地點的相鄰節點列表
+	var current_connections = location_data[current_node_id]["connections"]
+	
+	for id in _node_buttons.keys():
+		var btn = _node_buttons[id] as Button
+		if not btn:
+			continue
+		
+		# 當前地點永遠顯示
+		if id == current_node_id:
+			btn.visible = true
+			continue
+		
+		# 與當前地點相鄰的節點顯示
+		if id in current_connections:
+			btn.visible = true
+		else:
+			btn.visible = false
 
 
 # ============================================================
