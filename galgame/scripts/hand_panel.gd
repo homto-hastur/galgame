@@ -313,13 +313,13 @@ func _on_card_drag_ended(_card_ui: CardUI, was_used: bool) -> void:
 #  卡牌使用
 # ============================================================
 
-func _on_card_discarded(card_data: Dictionary, card_ui: CardUI) -> void:
+func _on_card_discarded(card_data: Dictionary, _card_ui: CardUI) -> void:
 	# 手牌面板只負責轉發信號，不直接操作 card_manager
 	# 由 map.gd 的 _on_card_discarded_from_hand 統一處理棄牌邏輯
 	card_discarded.emit(card_data)
 
 
-func _on_card_used(card_data: Dictionary, card_ui: CardUI) -> void:
+func _on_card_used(card_data: Dictionary, _card_ui: CardUI) -> void:
 	# 手牌面板只負責轉發信號，不直接操作 card_manager
 	# 由 map.gd 的 _on_card_used_from_hand 統一處理資源消耗、效果執行和卡牌移除
 	card_used.emit(card_data)
