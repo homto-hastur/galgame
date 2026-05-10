@@ -10,7 +10,8 @@ class_name CardUI
 
 # 卡牌資料
 var card_data: Dictionary = {}
-var is_playable: bool = false
+var is_playable: bool = false      # 是否可打出（有足夠行動點/資源）
+var is_discardable: bool = false   # 是否可棄牌（手牌超過上限時）
 var is_hovered: bool = false
 
 # 拖拽狀態
@@ -33,6 +34,7 @@ signal card_used(card_data: Dictionary)
 signal card_hovered(index: int, hovered: bool)
 signal card_drag_started(card_ui: CardUI)
 signal card_drag_ended(card_ui: CardUI, was_used: bool)
+signal card_discarded(card_data: Dictionary)
 
 var hand_index: int = -1  # 在手牌中的索引
 
@@ -108,16 +110,21 @@ func setup(data: Dictionary) -> void:
 		uses_label.visible = false
 
 
-# 設定是否可使用（高亮）
+# 設定是否可使用（高亮 + 可拖拽使用）
 func set_playable(playable: bool) -> void:
 	is_playable = playable
 	if playable:
 		highlight.visible = true
 		highlight.color = Color(1, 1, 0, 0.15)  # 淡黃色高亮
-		mouse_filter = MOUSE_FILTER_STOP
 	else:
 		highlight.visible = false
-		mouse_filter = MOUSE_FILTER_IGNORE
+	# 無論是否可打出，卡牌都保持可互動（為了棄牌）
+	mouse_filter = MOUSE_FILTER_STOP
+
+
+# 設定是否可棄牌（手牌超過上限時）
+func set_discardable(discardable: bool) -> void:
+	is_discardable = discardable
 
 
 # ============================================================
@@ -155,7 +162,8 @@ func _on_mouse_exited() -> void:
 # ============================================================
 
 func _on_gui_input(event: InputEvent) -> void:
-	if not is_playable:
+	# 只有可打出或可棄牌時才能拖拽
+	if not is_playable and not is_discardable:
 		return
 	
 	# 右鍵取消拖拽
@@ -193,16 +201,21 @@ func _start_drag() -> void:
 func _end_drag() -> void:
 	is_dragging = false
 	
-	# 檢查滑鼠下方是否有有效目標
-	var target = _get_target_under_mouse()
-	if target != null:
-		# 使用卡牌
-		card_drag_ended.emit(self, true)
-		card_used.emit(card_data)
-	else:
-		# 回彈到手牌
-		card_drag_ended.emit(self, false)
-		_return_to_hand()
+	# 檢查拖拽目標類型
+	var drop_type = _get_drop_target()
+	match drop_type:
+		"discard":
+			# 拖到螢幕底部：棄牌
+			card_drag_ended.emit(self, false)
+			card_discarded.emit(card_data)
+		"use":
+			# 拖到棄牌堆按鈕附近：使用卡牌
+			card_drag_ended.emit(self, true)
+			card_used.emit(card_data)
+		_:
+			# 其他位置：回彈到手牌
+			card_drag_ended.emit(self, false)
+			_return_to_hand()
 
 
 # 取消拖拽（右鍵）
@@ -222,14 +235,31 @@ func _return_to_hand() -> void:
 	)
 
 
-# 檢查滑鼠下方是否有可互動目標
-func _get_target_under_mouse() -> Node:
-	# 目前簡單檢查：如果拖到地圖區域上方則視為有效
-	# 後續可擴展為檢查具體節點/敵人
-	var map = get_tree().get_first_node_in_group("map")
-	if map and map.get_global_rect().has_point(get_global_mouse_position()):
-		return map
-	return null
+# 檢查拖拽目標類型
+# 返回: "discard"（棄牌）, "use"（使用卡牌）, ""（回彈）
+func _get_drop_target() -> String:
+	var mouse_pos = get_global_mouse_position()
+	var _viewport_size = get_viewport_rect().size
+	
+	# 檢查是否拖到棄牌堆按鈕附近（棄牌區域）
+	# 只有手牌超過上限時才允許棄牌
+	if is_discardable:
+		var discard_btn = get_tree().get_first_node_in_group("discard_button")
+		if discard_btn:
+			var btn_global_pos = discard_btn.global_position
+			var btn_size = discard_btn.size
+			var btn_rect = Rect2(btn_global_pos.x - 50, btn_global_pos.y - 50, btn_size.x + 100, btn_size.y + 100)
+			if btn_rect.has_point(mouse_pos):
+				return "discard"
+	
+	# 檢查是否拖到螢幕中央區域（使用卡牌區域）
+	# 只有可打出的卡牌才能使用
+	if is_playable:
+		var map = get_tree().get_first_node_in_group("map")
+		if map and map.get_global_rect().has_point(mouse_pos):
+			return "use"
+	
+	return ""
 
 
 # 使用卡牌動畫（飛向目標）

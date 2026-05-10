@@ -29,9 +29,15 @@ var _original_positions: Array[Vector2] = []  # 每張卡牌的原始位置
 
 # 信號
 signal card_used(card_data: Dictionary)
+signal card_drag_started()
+signal card_drag_ended()
+signal card_discarded(card_data: Dictionary)
 
 
 func _ready() -> void:
+	# 將棄牌堆按鈕加入群組（供卡牌拖拽目標檢測）
+	discard_button.add_to_group("discard_button")
+	
 	# 延遲更新位置，確保 viewport 尺寸已就緒
 	_update_pile_labels_position.call_deferred()
 
@@ -172,10 +178,11 @@ func _refresh_hand_display() -> void:
 		card_ui.position = positions[i]
 		
 		# 連接信號
-		card_ui.card_used.connect(_on_card_used.bind(i))
+		card_ui.card_used.connect(_on_card_used.bind(card_ui))
 		card_ui.card_hovered.connect(_on_card_hovered)
 		card_ui.card_drag_started.connect(_on_card_drag_started)
 		card_ui.card_drag_ended.connect(_on_card_drag_ended)
+		card_ui.card_discarded.connect(_on_card_discarded.bind(card_ui))
 		
 		add_child(card_ui)
 		# 先加入場景樹（確保 @onready 變數初始化），再設定卡牌資料
@@ -220,13 +227,21 @@ func _on_discard_button_pressed() -> void:
 	get_tree().root.add_child(discard_panel)
 
 
-# 刷新卡牌是否可使用
+# 檢查手牌是否超過上限
+func _is_over_hand_limit() -> bool:
+	return card_manager and card_manager.hand.size() > card_manager.MAX_HAND_SIZE
+
+
+# 刷新卡牌是否可使用 / 可棄牌
 func _refresh_playable_state() -> void:
+	var over_limit = _is_over_hand_limit()
 	for i in range(card_uis.size()):
 		var card_ui = card_uis[i]
 		if card_ui and card_manager:
 			var can_play = card_manager.can_play_card(i, available_actions, available_resources)
 			card_ui.set_playable(can_play)
+			# 手牌超過上限時，所有卡牌都可棄牌
+			card_ui.set_discardable(over_limit)
 
 
 # ============================================================
@@ -281,12 +296,15 @@ func _restore_all_positions() -> void:
 func _on_card_drag_started(card_ui: CardUI) -> void:
 	# 拖拽開始時，將卡牌移到最上層
 	card_ui.z_index = 100
+	# 通知地圖鎖定平移和縮放
+	card_drag_started.emit()
 
 
 func _on_card_drag_ended(_card_ui: CardUI, was_used: bool) -> void:
-	if not was_used:
-		# 如果取消使用，恢復所有卡牌位置
-		_restore_all_positions()
+	# 通知地圖解除鎖定
+	card_drag_ended.emit()
+	# 無論是取消使用還是棄牌，都恢復所有卡牌位置
+	_restore_all_positions()
 
 
 
@@ -294,10 +312,40 @@ func _on_card_drag_ended(_card_ui: CardUI, was_used: bool) -> void:
 #  卡牌使用
 # ============================================================
 
-func _on_card_used(card_data: Dictionary, index: int) -> void:
+func _on_card_discarded(card_data: Dictionary, card_ui: CardUI) -> void:
 	if card_manager == null:
 		return
 	
-	# 使用卡牌
-	if card_manager.use_card(index):
-		card_used.emit(card_data)
+	# 棄牌：透過卡牌 ID 找到在手牌中的實際索引（避免索引偏移問題）
+	var card_id = card_data.get("id", "")
+	if not card_id.is_empty():
+		var actual_index = -1
+		for i in range(card_manager.hand.size()):
+			if card_manager.hand[i].get("id", "") == card_id:
+				actual_index = i
+				break
+		
+		if actual_index >= 0:
+			card_manager.hand.remove_at(actual_index)
+			card_manager.discard_pile.append(card_id)
+			card_manager.hand_updated.emit(card_manager.hand)
+			card_manager.discard_updated.emit(card_manager.discard_pile.size())
+			card_discarded.emit(card_data)
+			print("棄牌: %s" % card_data.get("name", ""))
+
+
+func _on_card_used(card_data: Dictionary, card_ui: CardUI) -> void:
+	if card_manager == null:
+		return
+	
+	# 使用卡牌：透過卡牌 ID 找到在手牌中的實際索引
+	var card_id = card_data.get("id", "")
+	if not card_id.is_empty():
+		var actual_index = -1
+		for i in range(card_manager.hand.size()):
+			if card_manager.hand[i].get("id", "") == card_id:
+				actual_index = i
+				break
+		
+		if actual_index >= 0 and card_manager.use_card(actual_index):
+			card_used.emit(card_data)

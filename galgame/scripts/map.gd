@@ -87,6 +87,9 @@ var dragging: bool = false
 var drag_start: Vector2
 var node_positions := []
 
+# 卡牌拖拽鎖定（拖拽卡牌時禁止地圖平移/縮放）
+var card_dragging: bool = false
+
 @onready var map_content: Control = $MapContent
 @onready var bg: TextureRect = $MapContent/Background
 @onready var nodes_container: Control = $MapContent/NodesContainer
@@ -98,6 +101,8 @@ var node_positions := []
 @onready var dialogue_overlay: ColorRect = $DialogueOverlay
 @onready var dialogue_speaker: Label = $DialogueOverlay/DialoguePanel/Margin/VBox/Speaker
 @onready var dialogue_content: RichTextLabel = $DialogueOverlay/DialoguePanel/Margin/VBox/Content
+@onready var draw_card_btn: Button = $ActionPanel/DrawCardBtn
+@onready var gain_resource_btn: Button = $ActionPanel/GainResourceBtn
 
 # 卡牌系統
 @onready var card_manager = $CardManager
@@ -146,6 +151,10 @@ func _ready() -> void:
 	
 	# 初始化卡牌系統
 	_init_card_system()
+	
+	# 連接抽卡和獲取資源按鈕
+	draw_card_btn.pressed.connect(_on_draw_card_pressed)
+	gain_resource_btn.pressed.connect(_on_gain_resource_pressed)
 
 
 # 初始化卡牌系統
@@ -163,6 +172,35 @@ func _init_card_system() -> void:
 	
 	# 連接卡牌使用信號
 	hand_panel.card_used.connect(_on_card_used_from_hand)
+	
+	# 連接卡牌棄牌信號
+	hand_panel.card_discarded.connect(_on_card_discarded_from_hand)
+	
+	# 連接卡牌拖拽信號（拖拽時鎖定地圖平移/縮放）
+	hand_panel.card_drag_started.connect(_on_card_drag_started)
+	hand_panel.card_drag_ended.connect(_on_card_drag_ended)
+
+
+# 卡牌拖拽開始：鎖定地圖平移和縮放
+func _on_card_drag_started() -> void:
+	card_dragging = true
+
+
+# 卡牌拖拽結束：解除地圖鎖定，並重置地圖拖拽狀態
+func _on_card_drag_ended() -> void:
+	card_dragging = false
+	dragging = false
+
+
+# 處理卡牌棄牌
+func _on_card_discarded_from_hand(_card_data: Dictionary) -> void:
+	# 棄牌後檢查手牌是否仍超過上限
+	if card_manager.hand.size() > card_manager.MAX_HAND_SIZE:
+		print("手牌仍超過 %d 張，請繼續棄牌！" % card_manager.MAX_HAND_SIZE)
+		_show_hand_full_warning()
+	else:
+		# 手牌已低於上限，隱藏警告
+		print("手牌已低於上限（%d/%d）" % [card_manager.hand.size(), card_manager.MAX_HAND_SIZE])
 
 
 # 處理卡牌使用
@@ -420,6 +458,10 @@ func _input(event: InputEvent) -> void:
 	if _is_panel_open():
 		return
 	
+	# 拖拽卡牌時，鎖定地圖平移和縮放
+	if card_dragging:
+		return
+	
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
@@ -669,6 +711,45 @@ func use_action() -> bool:
 		_show_end_turn_button()
 	
 	return true
+
+
+# 抽卡按鈕（消耗 1 行動）
+func _on_draw_card_pressed() -> void:
+	if player_actions <= 0:
+		print("沒有剩餘行動次數，無法抽卡！")
+		return
+	
+	# 消耗一次行動
+	use_action()
+	
+	# 抽一張卡
+	card_manager.draw_card()
+	
+	# 更新手牌面板
+	hand_panel.set_available_actions(player_actions)
+	hand_panel.set_available_resources(player_resources)
+	
+	print("消耗 1 行動：抽 1 張卡（目前資源: %d/%d）" % [player_resources, player_max_resources])
+
+
+# 獲取資源按鈕（消耗 1 行動）
+func _on_gain_resource_pressed() -> void:
+	if player_actions <= 0:
+		print("沒有剩餘行動次數，無法獲取資源！")
+		return
+	
+	# 消耗一次行動
+	use_action()
+	
+	# 獲取 1 點資源
+	player_resources = mini(player_resources + 1, player_max_resources)
+	_update_resource_display()
+	
+	# 更新手牌面板
+	hand_panel.set_available_actions(player_actions)
+	hand_panel.set_available_resources(player_resources)
+	
+	print("消耗 1 行動：獲得 1 資源（目前資源: %d/%d）" % [player_resources, player_max_resources])
 
 
 # 重置行動次數（新回合時呼叫）
