@@ -1,0 +1,284 @@
+[gd_scene load_steps=3 format=3 uid="uid://cv4xomvgli3d8"]
+
+[ext_resource type="Script" uid="uid://c52m25twm61dg" path="res://scripts/main.gd" id="1_m7fqm"]
+[ext_resource type="Texture2D" uid="uid://cscc8wbbra0yq" path="res://assets/backgrounds/3d6dfb65-5c4d-42c0-a2b9-73be44a01244.jpg" id="2_1h6j2"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_m7fqm")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_1h6j2")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="DarkOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[node name="LeftPortrait" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.02
+anchor_top = 0.08
+anchor_right = 0.30
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CenterPortrait" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.30
+anchor_top = 0.08
+anchor_right = 0.70
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RightPortrait" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.70
+anchor_top = 0.08
+anchor_right = 0.98
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DialoguePanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.62
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Margin" type="MarginContainer" parent="DialoguePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="DialoguePanel/Margin"]
+layout_mode = 2
+
+[node name="Speaker" type="Label" parent="DialoguePanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+
+[node name="Content" type="RichTextLabel" parent="DialoguePanel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 26
+fit_content = true
+scroll_active = false
+
+[node name="Choices" type="VBoxContainer" parent="DialoguePanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="MenuButtons" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -320.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = 52.0
+grow_horizontal = 0
+
+[node name="AutoButton" type="Button" parent="MenuButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "自動 OFF"
+
+[node name="SkipButton" type="Button" parent="MenuButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "快轉"
+
+[node name="SaveButton" type="Button" parent="MenuButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "存檔"
+
+[node name="LoadButton" type="Button" parent="MenuButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "讀檔"
+
+[node name="BackTitleButton" type="Button" parent="MenuButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "標題"
+
+[node name="SavePanel" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="SavePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="SavePanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "存檔預覽"
+horizontal_alignment = 1
+
+[node name="PreviewText" type="RichTextLabel" parent="SavePanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "預覽內容..."
+
+[node name="HBox" type="HBoxContainer" parent="SavePanel/VBox"]
+layout_mode = 2
+
+[node name="ConfirmSaveButton" type="Button" parent="SavePanel/VBox/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "確認存檔"
+
+[node name="CancelSaveButton" type="Button" parent="SavePanel/VBox/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "取消"
+
+[node name="LoadPanel" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="LoadPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="LoadPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "讀檔預覽"
+horizontal_alignment = 1
+
+[node name="PreviewText" type="RichTextLabel" parent="LoadPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "預覽內容..."
+
+[node name="HBox" type="HBoxContainer" parent="LoadPanel/VBox"]
+layout_mode = 2
+
+[node name="ConfirmLoadButton" type="Button" parent="LoadPanel/VBox/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "確認讀檔"
+
+[node name="CancelLoadButton" type="Button" parent="LoadPanel/VBox/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "取消"
+
+[node name="HistoryPanel" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HistoryPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HistoryPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="HistoryContainer" type="VBoxContainer" parent="HistoryPanel/MarginContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CloseHistoryButton" type="Button" parent="HistoryPanel"]
+layout_mode = 1
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 92.0
+offset_bottom = 48.0
+grow_vertical = 0
+text = "關閉 [ESC]"

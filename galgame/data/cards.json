@@ -1,0 +1,247 @@
+[
+	{
+		"id": "rusty_sword",
+		"name": "生鏽的鐵劍",
+		"type": "weapon",
+		"cost": 1,
+		"resource_cost": 2,
+		"description": "一把鏽跡斑斑的鐵劍，雖然老舊但還能用。",
+		"flavor": "「曾經的主人想必也是個戰士吧。」",
+		"effect": {
+			"kind": "combat_buff",
+			"value": 2,
+			"damage": 1
+		},
+		"slot": "hand",
+		"uses": null,
+		"traits": ["武器", "近戰"]
+	},
+	{
+		"id": "wooden_shield",
+		"name": "木盾",
+		"type": "weapon",
+		"cost": 1,
+		"resource_cost": 1,
+		"description": "簡陋的木盾，至少能擋住一些攻擊。",
+		"flavor": "總比空手好。",
+		"effect": {
+			"kind": "defense_buff",
+			"value": 1
+		},
+		"slot": "hand",
+		"uses": null,
+		"traits": ["武器", "防具"]
+	},
+	{
+		"id": "candle",
+		"name": "蠟燭",
+		"type": "item",
+		"cost": 0,
+		"resource_cost": 1,
+		"description": "微弱的燭光，能照亮前方的道路。",
+		"flavor": "黑暗中的一絲希望。",
+		"effect": {
+			"kind": "investigate_buff",
+			"value": 1
+		},
+		"slot": "accessory",
+		"uses": null,
+		"traits": ["道具", "光源"]
+	},
+	{
+		"id": "old_key",
+		"name": "古老的鑰匙",
+		"type": "item",
+		"cost": 0,
+		"resource_cost": 1,
+		"description": "一把樣式古老的鑰匙，說不定能打開某扇門。",
+		"flavor": "鑰匙上刻著看不懂的文字。",
+		"effect": {
+			"kind": "unlock",
+			"value": 0
+		},
+		"slot": "accessory",
+		"uses": 1,
+		"traits": ["道具", "鑰匙"]
+	},
+	{
+		"id": "healing_potion",
+		"name": "治療藥水",
+		"type": "item",
+		"cost": 1,
+		"resource_cost": 2,
+		"description": "散發著微光的紅色藥水，能恢復2點生命值。",
+		"flavor": "喝起來像草莓味的糖漿。",
+		"effect": {
+			"kind": "heal_hp",
+			"value": 2
+		},
+		"slot": null,
+		"uses": 1,
+		"traits": ["道具", "藥水"]
+	},
+	{
+		"id": "sanity_potion",
+		"name": "鎮定藥水",
+		"type": "item",
+		"cost": 1,
+		"resource_cost": 2,
+		"description": "清涼的藍色藥水，能恢復2點理智值。",
+		"flavor": "薄荷味的，讓人精神一振。",
+		"effect": {
+			"kind": "heal_sanity",
+			"value": 2
+		},
+		"slot": null,
+		"uses": 1,
+		"traits": ["道具", "藥水"]
+	},
+	{
+		"id": "fire_spell",
+		"name": "火球術",
+		"type": "spell",
+		"cost": 2,
+		"resource_cost": 3,
+		"description": "凝聚魔力釋放一顆火球，造成3點傷害。",
+		"flavor": "「🔥」",
+		"effect": {
+			"kind": "damage",
+			"value": 3
+		},
+		"slot": null,
+		"uses": 1,
+		"traits": ["法術", "火焰"]
+	},
+	{
+		"id": "light_spell",
+		"name": "照明術",
+		"type": "spell",
+		"cost": 1,
+		"resource_cost": 2,
+		"description": "發出強光，降低所在地點的迷霧值2點。",
+		"flavor": "光芒驅散了黑暗。",
+		"effect": {
+			"kind": "reduce_shroud",
+			"value": 2
+		},
+		"slot": null,
+		"uses": 1,
+		"traits": ["法術", "光明"]
+	},
+	{
+		"id": "shield_spell",
+		"name": "護盾術",
+		"type": "spell",
+		"cost": 1,
+		"resource_cost": 2,
+		"description": "魔力屏障環繞全身，本回合受到的傷害減半。",
+		"flavor": "一道淡藍色的光幕籠罩著你。",
+		"effect": {
+			"kind": "shield",
+			"value": 1,
+			"duration": 1
+		},
+		"slot": null,
+		"uses": 1,
+		"traits": ["法術", "防護"]
+	},
+	{
+		"id": "sneak",
+		"name": "潛行",
+		"type": "skill",
+		"cost": 0,
+		"resource_cost": 0,
+		"description": "屏住呼吸，悄無聲息地移動。敏捷+2直到回合結束。",
+		"flavor": "「希望他們沒發現我……」",
+		"effect": {
+			"kind": "agility_buff",
+			"value": 2,
+			"duration": 1
+		},
+		"slot": null,
+		"uses": 1,
+		"traits": ["技能", "潛行"]
+	},
+	{
+		"id": "observation",
+		"name": "敏銳觀察",
+		"type": "skill",
+		"cost": 0,
+		"resource_cost": 0,
+		"description": "仔細觀察四周，智力+2直到回合結束。",
+		"flavor": "「細節決定成敗。」",
+		"effect": {
+			"kind": "intellect_buff",
+			"value": 2,
+			"duration": 1
+		},
+		"slot": null,
+		"uses": 1,
+		"traits": ["技能", "觀察"]
+	},
+	{
+		"id": "dodge",
+		"name": "閃避",
+		"type": "skill",
+		"cost": 0,
+		"resource_cost": 0,
+		"description": "千鈞一髮之際躲開攻擊。",
+		"flavor": "「好險！」",
+		"effect": {
+			"kind": "evade",
+			"value": 0
+		},
+		"slot": null,
+		"uses": 1,
+		"traits": ["技能", "閃避"]
+	},
+	{
+		"id": "torch",
+		"name": "火把",
+		"type": "item",
+		"cost": 1,
+		"resource_cost": 2,
+		"description": "燃燒的火把，照亮黑暗並降低迷霧值1點。",
+		"flavor": "噼啪作響的火焰給人安全感。",
+		"effect": {
+			"kind": "reduce_shroud",
+			"value": 1
+		},
+		"slot": "hand",
+		"uses": 3,
+		"traits": ["道具", "光源"]
+	},
+	{
+		"id": "lockpick",
+		"name": "萬能鑰匙",
+		"type": "item",
+		"cost": 1,
+		"resource_cost": 1,
+		"description": "一組精緻的開鎖工具，可以用來解鎖。",
+		"flavor": "「這東西的來路……還是別問了。」",
+		"effect": {
+			"kind": "unlock",
+			"value": 0
+		},
+		"slot": null,
+		"uses": 2,
+		"traits": ["道具", "工具"]
+	},
+	{
+		"id": "rage",
+		"name": "奮力一擊",
+		"type": "skill",
+		"cost": 1,
+		"resource_cost": 1,
+		"description": "集中全力發動攻擊，戰鬥+3，造成額外1點傷害。",
+		"flavor": "「喝啊——！！」",
+		"effect": {
+			"kind": "combat_buff",
+			"value": 3,
+			"damage": 1
+		},
+		"slot": null,
+		"uses": 1,
+		"traits": ["技能", "戰鬥"]
+	}
+]

@@ -1,0 +1,393 @@
+[gd_scene load_steps=8 format=3 uid="uid://bqg6bx6ink35t"]
+
+[ext_resource type="Script" uid="uid://de3f60t6fw2ps" path="res://scripts/map.gd" id="1_map"]
+[ext_resource type="Texture2D" uid="uid://cysse0sik8blf" path="res://assets/player_sprite_sheet.png" id="2_player_sheet"]
+[ext_resource type="PackedScene" uid="uid://b4y7q0q2m5k6t" path="res://scenes/HandPanel.tscn" id="4_hand"]
+[ext_resource type="Script" uid="uid://dnhjcidqbjles" path="res://scripts/card_manager.gd" id="5_card_manager"]
+
+[sub_resource type="StyleBoxFlat" id="1"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="2"]
+bg_color = Color(0.9, 0.15, 0.15, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="3"]
+bg_color = Color(0.2, 0.5, 0.9, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="Map" type="Control"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_map")
+
+[node name="MapContent" type="Control" parent="."]
+custom_minimum_size = Vector2(2400, 1800)
+layout_mode = 1
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="Background" type="TextureRect" parent="MapContent"]
+layout_mode = 1
+offset_right = 2400.0
+offset_bottom = 1800.0
+stretch_mode = 6
+
+[node name="ArrowsContainer" type="Control" parent="MapContent"]
+custom_minimum_size = Vector2(2400, 1800)
+layout_mode = 1
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="NodesContainer" type="Control" parent="MapContent"]
+custom_minimum_size = Vector2(2400, 1800)
+layout_mode = 1
+anchors_preset = 0
+offset_top = -3.0
+offset_right = 2400.0
+offset_bottom = 1797.0
+mouse_filter = 2
+
+[node name="PlayerPiece" type="Control" parent="MapContent"]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 1
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="Sprite" type="Sprite2D" parent="MapContent/PlayerPiece"]
+position = Vector2(64, 64)
+texture = ExtResource("2_player_sheet")
+
+[node name="Tooltip" type="Panel" parent="MapContent"]
+visible = false
+layout_mode = 1
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 316.0
+offset_bottom = 116.0
+
+[node name="Label" type="Label" parent="MapContent/Tooltip"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 14
+autowrap_mode = 2
+
+[node name="ActionPanel" type="Panel" parent="."]
+layout_mode = 1
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 308.0
+offset_bottom = 300.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("1")
+
+[node name="ActionLabel" type="Label" parent="ActionPanel"]
+layout_mode = 1
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 288.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "行動次數"
+
+[node name="ResourceLabel" type="Label" parent="ActionPanel"]
+layout_mode = 1
+offset_left = 12.0
+offset_top = 32.0
+offset_right = 288.0
+offset_bottom = 52.0
+theme_override_colors/font_color = Color(0.6, 0.4, 0.1, 1)
+theme_override_font_sizes/font_size = 14
+text = "資源: 5/10"
+
+[node name="Crosses" type="HBoxContainer" parent="ActionPanel"]
+layout_mode = 1
+offset_left = 12.0
+offset_top = 56.0
+offset_right = 288.0
+offset_bottom = 96.0
+
+[node name="Cross1" type="Label" parent="ActionPanel/Crosses"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 36
+text = "✚"
+
+[node name="Cross2" type="Label" parent="ActionPanel/Crosses"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 36
+text = "✚"
+
+[node name="Cross3" type="Label" parent="ActionPanel/Crosses"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 36
+text = "✚"
+
+[node name="InfoPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 8.0
+offset_top = -200.0
+offset_right = 308.0
+offset_bottom = 200.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("1")
+
+[node name="Margin" type="MarginContainer" parent="InfoPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="InfoPanel/Margin"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="InfoPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "角色狀態"
+
+[node name="Separator" type="HSeparator" parent="InfoPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="HPBar" type="HBoxContainer" parent="InfoPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="HPLabel" type="Label" parent="InfoPanel/Margin/VBox/HPBar"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 16
+text = "HP"
+
+[node name="HPProgress" type="ProgressBar" parent="InfoPanel/Margin/VBox/HPBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_styles/fill = SubResource("2")
+max_value = 6.0
+value = 6.0
+show_percentage = false
+
+[node name="HPValue" type="Label" parent="InfoPanel/Margin/VBox/HPBar"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "6/6"
+
+[node name="SanBar" type="HBoxContainer" parent="InfoPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="SanLabel" type="Label" parent="InfoPanel/Margin/VBox/SanBar"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 16
+text = "SAN"
+
+[node name="SanProgress" type="ProgressBar" parent="InfoPanel/Margin/VBox/SanBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_styles/fill = SubResource("3")
+max_value = 5.0
+value = 5.0
+show_percentage = false
+
+[node name="SanValue" type="Label" parent="InfoPanel/Margin/VBox/SanBar"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "5/5"
+
+[node name="Separator2" type="HSeparator" parent="InfoPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="StatsTitle" type="Label" parent="InfoPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "能力值"
+
+[node name="StatsGrid" type="GridContainer" parent="InfoPanel/Margin/VBox"]
+layout_mode = 2
+columns = 2
+
+[node name="WpLabel" type="Label" parent="InfoPanel/Margin/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "意志 (WP)"
+
+[node name="WpValue" type="Label" parent="InfoPanel/Margin/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "3"
+horizontal_alignment = 2
+
+[node name="IntLabel" type="Label" parent="InfoPanel/Margin/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "智力 (INT)"
+
+[node name="IntValue" type="Label" parent="InfoPanel/Margin/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "4"
+horizontal_alignment = 2
+
+[node name="CombatLabel" type="Label" parent="InfoPanel/Margin/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "戰鬥 (COMBAT)"
+
+[node name="CombatValue" type="Label" parent="InfoPanel/Margin/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "3"
+horizontal_alignment = 2
+
+[node name="AgiLabel" type="Label" parent="InfoPanel/Margin/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "敏捷 (AGI)"
+
+[node name="AgiValue" type="Label" parent="InfoPanel/Margin/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "3"
+horizontal_alignment = 2
+
+[node name="Separator3" type="HSeparator" parent="InfoPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="EquipTitle" type="Label" parent="InfoPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "裝備"
+
+[node name="EquipList" type="Label" parent="InfoPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "無"
+
+[node name="CardManager" type="Node" parent="."]
+script = ExtResource("5_card_manager")
+
+[node name="HandPanel" parent="." instance=ExtResource("4_hand")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DialogueOverlay" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+color = Color(0, 0, 0, 0.5)
+
+[node name="DialoguePanel" type="Panel" parent="DialogueOverlay"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = -200.0
+offset_right = -60.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("1")
+
+[node name="Margin" type="MarginContainer" parent="DialogueOverlay/DialoguePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="DialogueOverlay/DialoguePanel/Margin"]
+layout_mode = 2
+
+[node name="Speaker" type="Label" parent="DialogueOverlay/DialoguePanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "主角"
+
+[node name="Content" type="RichTextLabel" parent="DialogueOverlay/DialoguePanel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 22
+text = "那我就進去看看吧……"
+fit_content = true
+scroll_active = false
