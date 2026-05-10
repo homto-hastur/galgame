@@ -121,7 +121,7 @@ func _ready() -> void:
 	
 	# 進入地圖時顯示開場對話
 	_show_entry_dialogue()
-	bg.texture = preload("res://assets/backgrounds/黑暗奇幻地牢全景鳥瞰圖.png")
+	bg.texture = preload("res://assets/backgrounds/捲軸.png")
 
 	bg.size = Vector2(2400, 1800)
 	# 計算縮放邊界
